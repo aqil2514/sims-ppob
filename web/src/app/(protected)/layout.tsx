@@ -1,4 +1,5 @@
 "use client";
+import Header from "@/components/layout/Header";
 import { RootState } from "@/store";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
@@ -19,5 +20,11 @@ export default function ProtectedLayout({
     }
   }, [isAuthenticated, router]);
 
-  return children;
+  return (
+    <main>
+      <Header />
+
+      {children}
+    </main>
+  );
 }
