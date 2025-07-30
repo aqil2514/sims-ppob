@@ -1,8 +1,7 @@
 "use client";
 import MainContainer from "@/components/layout/MainContainer";
-import BalanceCard from "@/components/molecules/card/BalanceCard";
 import BannerSliderCard from "@/components/molecules/card/BannerSliderCard";
-import GreetingsCard from "@/components/molecules/card/GreetingsCard";
+import ProfileAndBalance from "@/components/organisms/ProfileAndBalance";
 import DashboardProvider, {
   useDashboardData,
 } from "@/components/providers/DashboardProvider";
@@ -22,7 +21,7 @@ export default function DashboardTemplate() {
 
   return (
     <DashboardProvider swr={swr}>
-      <MainContainer className="px-20 py-8">
+      <MainContainer>
         <TopSection />
         <MiddleSection />
         <BottomSection />
@@ -36,15 +35,7 @@ const TopSection = () => {
   const profile = swr.data?.profile;
   const balance = swr.data?.balance?.balance;
 
-  return (
-    <section className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-      <GreetingsCard
-        avatarUrl={profile?.profile_image || ""}
-        name={`${profile?.first_name || ""} ${profile?.last_name || ""}`}
-      />
-      <BalanceCard balance={balance} />
-    </section>
-  );
+  return <ProfileAndBalance balance={balance} profile={profile} />
 };
 
 const MiddleSection = () => {

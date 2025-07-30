@@ -26,6 +26,25 @@ export async function getDashboardResources(token: string) {
   }
 }
 
+export async function getTopupResource(token: string) {
+  try {
+    const [profile, balance] = await Promise.all([
+      getProfile(token),
+      getBalance(token),
+    ]);
+
+    const data = {
+      profile,
+      balance,
+    };
+
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
 export async function getProfile(token: string) {
   try {
     const { data } = await axios.get(`${api}/profile`, {
