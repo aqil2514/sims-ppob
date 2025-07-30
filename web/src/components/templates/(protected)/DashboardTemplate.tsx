@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
 import { getDashboardResources } from "@/lib/api-fetch";
 import Image from "next/image";
+import Link from "next/link";
 import useSWR from "swr";
 
 export default function DashboardTemplate() {
@@ -35,7 +36,7 @@ const TopSection = () => {
   const profile = swr.data?.profile;
   const balance = swr.data?.balance?.balance;
 
-  return <ProfileAndBalance balance={balance} profile={profile} />
+  return <ProfileAndBalance balance={balance} profile={profile} />;
 };
 
 const MiddleSection = () => {
@@ -57,21 +58,22 @@ const MiddleSection = () => {
               </div>
             ))
           : services.map((service) => (
-              <div
-                key={service.service_code}
-                className="flex flex-col items-center space-y-1 min-w-[64px]"
-              >
-                <Image
-                  src={service.service_icon}
-                  alt={service.service_name}
-                  width={40}
-                  height={40}
-                  className="rounded-md"
-                />
-                <span className="text-sm text-center font-medium">
-                  {service.service_name}
-                </span>
-              </div>
+              <Link href={`service/${service.service_code}`} key={service.service_code}>
+                <div className="flex flex-col items-center space-y-1 min-w-[64px]">
+                  <Image
+                    src={service.service_icon}
+                    alt={service.service_name}
+                    width={40}
+                    height={40}
+                    sizes="auto"
+                    priority
+                    className="rounded-md"
+                  />
+                  <span className="text-sm text-center font-medium">
+                    {service.service_name}
+                  </span>
+                </div>
+              </Link>
             ))}
       </div>
       <ScrollBar orientation="horizontal" />

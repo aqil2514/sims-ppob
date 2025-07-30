@@ -70,7 +70,7 @@ const ConfirmDialog: React.FC<{
 }> = ({ nominal, onConfirm }) => {
   const [status, setStatus] = useState<Status>("idle");
   const [open, setOpen] = useState<boolean>(false);
-  const router = useRouter()
+  const router = useRouter();
 
   const handleConfirm = async () => {
     setStatus("loading");
@@ -103,6 +103,13 @@ const ConfirmDialog: React.FC<{
     success: "Top Up sebesar",
     error: "Top Up sebesar",
     loading: "Memproses...",
+  };
+
+  const responseText: Record<Status, string> = {
+    error: "Gagal",
+    idle: "",
+    loading: "",
+    success: "Berhasil",
   };
 
   const isBackToHome = status === "success" || status === "error";
@@ -139,6 +146,7 @@ const ConfirmDialog: React.FC<{
           {renderStatusIcon()}
           <p>{statusText[status]}</p>
           <p className="font-bold">Rp. {nominal.toLocaleString("ID-id")}</p>
+          <p>{responseText[status]}</p>
 
           {status === "idle" && (
             <Button
