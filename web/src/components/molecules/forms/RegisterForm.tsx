@@ -11,14 +11,19 @@ import {
   registrationSchema,
   RegistrationSchemaType,
 } from "@/schemas/registration-schema";
+import { api } from "@/variables/api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AtSign, Eye, EyeClosed, Lock, User } from "lucide-react";
+import axios, { isAxiosError } from "axios";
+import { AtSign, Eye, EyeClosed, Lock, User, LoaderCircle } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 export default function RegisterForm() {
   const [isVisiblePassword, setIsVisiblePassword] = useState<boolean>(false);
-  const [isVisibleConfirmPassword, setIsVisibleConfirmPassword] = useState<boolean>(false);
+  const [isVisibleConfirmPassword, setIsVisibleConfirmPassword] =
+    useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const form = useForm<RegistrationSchemaType>({
     resolver: zodResolver(registrationSchema),
@@ -32,12 +37,32 @@ export default function RegisterForm() {
   });
 
   const visibilityHandler = () => setIsVisiblePassword(!isVisiblePassword);
-  const visibilityConfirmHandler = () => setIsVisibleConfirmPassword(!isVisibleConfirmPassword);
+  const visibilityConfirmHandler = () =>
+    setIsVisibleConfirmPassword(!isVisibleConfirmPassword);
 
-  function onSubmit(values: RegistrationSchemaType) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+  async function onSubmit(values: RegistrationSchemaType) {
+    const formData = {
+      email: values.email,
+      first_name: values.firstName,
+      last_name: values.lastName,
+      password: values.password,
+    };
+    try {
+      setIsLoading(true);
+      const { data } = await axios.post(`${api}/registration`, formData);
+      toast.success(data.message);
+    } catch (error) {
+      console.error(error);
+      if (isAxiosError(error)) {
+        const status = error.status;
+        const data = error.response?.data;
+        if (status === 400) {
+          toast.error(data.message ?? "Form tidak valid");
+        }
+      }
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -52,6 +77,7 @@ export default function RegisterForm() {
                 <div className="relative">
                   <AtSign className="absolute top-1.5 left-1 text-gray-300" />
                   <Input
+                    disabled={isLoading}
                     placeholder="masukkan email anda..."
                     {...field}
                     className="pl-8"
@@ -72,6 +98,7 @@ export default function RegisterForm() {
                 <div className="relative">
                   <User className="absolute top-1.5 left-1 text-gray-300" />
                   <Input
+                    disabled={isLoading}
                     placeholder="nama depan..."
                     {...field}
                     className="pl-8"
@@ -92,6 +119,7 @@ export default function RegisterForm() {
                 <div className="relative">
                   <User className="absolute top-1.5 left-1 text-gray-300" />
                   <Input
+                    disabled={isLoading}
                     placeholder="nama belakang..."
                     {...field}
                     className="pl-8"
@@ -112,6 +140,7 @@ export default function RegisterForm() {
                 <div className="relative">
                   <Lock className="absolute top-1.5 left-1 text-gray-300" />
                   <Input
+                    disabled={isLoading}
                     type={isVisiblePassword ? "text" : "password"}
                     placeholder="masukkan password anda..."
                     className="px-8"
@@ -144,6 +173,7 @@ export default function RegisterForm() {
                 <div className="relative">
                   <Lock className="absolute top-1.5 left-1 text-gray-300" />
                   <Input
+                    disabled={isLoading}
                     type={isVisibleConfirmPassword ? "text" : "password"}
                     placeholder="masukkan password anda..."
                     className="px-8"
@@ -167,8 +197,18 @@ export default function RegisterForm() {
           )}
         />
 
-        <Button type="submit" className="bg-red-500 hover:bg-red-600 w-full">
-          Submit
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="bg-red-500 hover:bg-red-600 w-full"
+        >
+          {isLoading ? (
+            <>
+              <LoaderCircle className="animate-spin" /> Memproses...
+            </>
+          ) : (
+            "Registrasi"
+          )}
         </Button>
       </form>
     </Form>

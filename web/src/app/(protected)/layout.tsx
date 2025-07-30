@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 
-export default function AuthLayout({
+export default function ProtectedLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -14,8 +14,8 @@ export default function AuthLayout({
   const { isAuthenticated } = auth;
 
   useEffect(() => {
-    if (isAuthenticated) {
-      router.replace("/dashboard");
+    if (!isAuthenticated) {
+      router.replace("/login");
     }
   }, [isAuthenticated, router]);
 

@@ -8,6 +8,8 @@ export default function AuthIllustration() {
         fill
         alt="Login Illustration"
         className="object-cover"
+        priority
+        sizes="auto"
       />
     </div>
   );
