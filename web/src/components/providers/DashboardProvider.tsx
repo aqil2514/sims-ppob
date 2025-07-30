@@ -1,16 +1,17 @@
 import { Banner, Service } from "@/@types/data";
 import { Balance, Profile } from "@/@types/user";
 import React, { createContext, useContext } from "react";
+import { SWRResponse } from "swr";
+
+interface Data {
+  profile: Profile;
+  balance: Balance;
+  services: Service[];
+  banners: Banner[];
+}
 
 interface DashboardContextState {
-  data:
-    | {
-        profile: Profile;
-        balance: Balance;
-        services: Service[];
-        banners: Banner[];
-      }
-    | undefined;
+  swr:SWRResponse<Data>;
 }
 
 const DashboardContext = createContext<DashboardContextState>(
@@ -23,10 +24,10 @@ interface DashboardProviderProps extends DashboardContextState {
 
 export default function DashboardProvider({
   children,
-  data,
+  swr,
 }: DashboardProviderProps) {
   const value: DashboardContextState = {
-    data,
+    swr,
   };
 
   return (
