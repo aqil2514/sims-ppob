@@ -16,7 +16,7 @@ export default function GreetingsCard({
   const [imgSrc, setImgSrc] = useState<string>(avatarUrl ?? defaultImage);
 
   return (
-    <div className="flex flex-col space-x-4">
+    <div className="flex flex-col items-center md:items-start space-x-4">
       {isLoading ? (
         <Skeleton className="h-14 w-14 rounded-full" />
       ) : (

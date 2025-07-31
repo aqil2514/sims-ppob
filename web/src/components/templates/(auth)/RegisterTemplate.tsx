@@ -6,7 +6,7 @@ import RegisterForm from "@/components/molecules/forms/RegisterForm";
 
 export default function RegisterTemplate() {
   return (
-    <MainContainer className="grid grid-cols-2">
+    <MainContainer className="grid grid-cols-1 md:grid-cols-2">
       <AuthCard
         topDescription="Lengkapi data untuk"
         bottomDescription="membuat akun"

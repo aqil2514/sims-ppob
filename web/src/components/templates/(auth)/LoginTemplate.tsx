@@ -7,7 +7,7 @@ import LoginForm from "@/components/molecules/forms/LoginForm";
 
 export default function LoginTemplate() {
   return (
-    <MainContainer className="grid grid-cols-2">
+    <MainContainer className="grid grid-cols-1 md:grid-cols-2">
       <AuthCard
         topDescription="Masuk atau buat akun"
         bottomDescription="untuk memulai"

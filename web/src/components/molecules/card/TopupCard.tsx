@@ -5,10 +5,10 @@ import React, { SetStateAction, useState } from "react";
 export default function TopupCard() {
   const [nominal, setNominal] = useState<number>(0);
   return (
-    <div>
+    <div className="space-y-4">
       <p>Silahkan masukkan</p>
       <p className="font-bold text-xl">Nominal Top Up</p>
-      <div className="grid grid-cols-2">
+      <div className="flex justify-between flex-col-reverse md:flex-row gap-4">
         <TopupForm nominal={nominal} setNominal={setNominal} />
         <NominalList setNominal={setNominal} />
       </div>

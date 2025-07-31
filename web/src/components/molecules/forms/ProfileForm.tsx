@@ -107,7 +107,7 @@ export default function ProfileForm({ defaultValues }: ProfileFormProps) {
   };
 
   return (
-    <form className="w-2/4 h-2/4 space-y-4">
+    <form className="w-4/5 md:w-2/4 h-2/4 space-y-4">
       <div className="space-y-4">
         <figure className="text-center">
           <div className="relative h-[84px] w-[84px] mx-auto">
