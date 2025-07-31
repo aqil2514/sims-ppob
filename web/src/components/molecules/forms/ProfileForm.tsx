@@ -2,22 +2,31 @@ import { Profile } from "@/@types/user";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/hooks/useAuth";
+import { updateImage, validateProfileData } from "@/lib/profile";
+import { imageSchema } from "@/schemas/profile-schema";
 import { logout } from "@/store/slices/auth";
+import { api } from "@/variables/api";
 import { defaultImage } from "@/variables/default-images";
+import axios, { isAxiosError } from "axios";
 import { Pencil } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
+import z from "zod";
 
 interface ProfileFormProps {
   defaultValues: Profile;
 }
 
 export default function ProfileForm({ defaultValues }: ProfileFormProps) {
+  const { token } = useAuth();
   const [profile, setProfile] = useState<Profile>(defaultValues);
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
+  const [image, setImage] = useState<null | File>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const [imagePreview, setImagePreview] = useState<string>(
     profile.profile_image
@@ -31,6 +40,8 @@ export default function ProfileForm({ defaultValues }: ProfileFormProps) {
   const logoutCancelHandler = () => {
     if (isEditMode) {
       setIsEditMode(false);
+      setProfile(defaultValues);
+      setImagePreview(profile.profile_image);
       return;
     }
     dispatch(logout());
@@ -45,9 +56,34 @@ export default function ProfileForm({ defaultValues }: ProfileFormProps) {
     setProfile((prev) => ({ ...prev, [state]: target.value }));
   };
 
-  const clickHandler = () => {
+  const submitEditHandler = async () => {
     if (!isEditMode) return setIsEditMode(true);
-    console.log(profile);
+    validateProfileData(profile);
+    if (!image) return;
+
+    try {
+      setIsSubmitting(true);
+      const urlImage = await updateImage(image, token!);
+      setProfile((prev) => ({ ...prev, profile_image: urlImage }));
+
+      const { data } = await axios.put(`${api}/profile/update`, profile, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      toast.success(data.message);
+    } catch (error) {
+      console.error(error);
+      if (isAxiosError(error)) {
+        const data = error.response?.data;
+
+        toast.error(data.message ?? "Terjadi kesalahan");
+        throw error;
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const imageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,8 +92,18 @@ export default function ProfileForm({ defaultValues }: ProfileFormProps) {
     if (!files) return;
 
     const file = files[0];
+    try {
+      imageSchema.parse(file);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast.error(error.issues[0].message);
+        throw error;
+      }
+    }
+
     const imageUrl = URL.createObjectURL(file);
     setImagePreview(imageUrl);
+    setImage(file);
   };
 
   return (
@@ -99,7 +145,7 @@ export default function ProfileForm({ defaultValues }: ProfileFormProps) {
       <div className="space-y-4">
         <Label htmlFor="email">Email</Label>
         <Input
-          disabled={!isEditMode}
+          disabled={!isEditMode || isSubmitting}
           type="email"
           id="email"
           value={profile.email}
@@ -110,7 +156,7 @@ export default function ProfileForm({ defaultValues }: ProfileFormProps) {
       <div className="space-y-4">
         <Label htmlFor="firstName">Nama Depan</Label>
         <Input
-          disabled={!isEditMode}
+          disabled={!isEditMode || isSubmitting}
           id="firstName"
           type="text"
           value={profile.first_name}
@@ -121,7 +167,7 @@ export default function ProfileForm({ defaultValues }: ProfileFormProps) {
       <div className="space-y-4">
         <Label htmlFor="lastName">Nama Belakang</Label>
         <Input
-          disabled={!isEditMode}
+          disabled={!isEditMode || isSubmitting}
           id="lastName"
           type="text"
           value={profile.last_name}
@@ -133,7 +179,8 @@ export default function ProfileForm({ defaultValues }: ProfileFormProps) {
       <Button
         type="button"
         className="bg-red-500 hover:bg-red-600 w-full"
-        onClick={clickHandler}
+        disabled={isSubmitting}
+        onClick={submitEditHandler}
       >
         {isEditMode ? "Simpan" : "Edit Profile"}
       </Button>
@@ -142,6 +189,7 @@ export default function ProfileForm({ defaultValues }: ProfileFormProps) {
         variant={"outline"}
         className="border-red-500 text-red-500 hover:text-red-600 w-full"
         type="button"
+        disabled={isSubmitting}
         onClick={logoutCancelHandler}
       >
         {isEditMode ? "Batalkan" : "Logout"}
