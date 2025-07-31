@@ -1,4 +1,4 @@
-import { Banner, Service } from "@/@types/data";
+import { Banner, Service, TransactionHistory } from "@/@types/data";
 import { Balance, Profile } from "@/@types/user";
 import { api } from "@/variables/api";
 import axios from "axios";
@@ -45,18 +45,18 @@ export async function getTopupResource(token: string) {
   }
 }
 
-export async function getServiceResource(token:string){
-   try {
+export async function getServiceResource(token: string) {
+  try {
     const [profile, balance, services] = await Promise.all([
       getProfile(token),
       getBalance(token),
-      getServices(token)
+      getServices(token),
     ]);
 
     const data = {
       profile,
       balance,
-      services
+      services,
     };
 
     return data;
@@ -66,7 +66,28 @@ export async function getServiceResource(token:string){
   }
 }
 
-export async function getProfile(token: string) {
+export async function getTransactionResource(token:string, limit:number){
+  try {
+    const [profile, balance, transactionHistory] = await Promise.all([
+      getProfile(token),
+      getBalance(token),
+      getTransactionHistory(token, limit)
+    ]);
+
+    const data = {
+      profile,
+      balance,
+      transactionHistory,
+    };
+
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+async function getProfile(token: string) {
   try {
     const { data } = await axios.get(`${api}/profile`, {
       headers: {
@@ -81,7 +102,7 @@ export async function getProfile(token: string) {
   }
 }
 
-export async function getBalance(token: string) {
+async function getBalance(token: string) {
   try {
     const { data } = await axios.get(`${api}/balance`, {
       headers: {
@@ -96,7 +117,7 @@ export async function getBalance(token: string) {
   }
 }
 
-export async function getServices(token: string) {
+async function getServices(token: string) {
   try {
     const { data } = await axios.get(`${api}/services`, {
       headers: {
@@ -111,11 +132,29 @@ export async function getServices(token: string) {
   }
 }
 
-export async function getBanner() {
+async function getBanner() {
   try {
     const { data } = await axios.get(`${api}/banner`);
 
     return data.data as Banner[];
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+async function getTransactionHistory(token: string, limit: number) {
+  try {
+    const { data } = await axios.get(`${api}/transaction/history`, {
+      params: {
+        limit,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return data.data.records as TransactionHistory[];
   } catch (error) {
     console.error(error);
     throw error;
