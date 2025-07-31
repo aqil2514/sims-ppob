@@ -1,5 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { defaultImage } from "@/variables/default-images";
+import { useState } from "react";
 
 interface GreetingsCardProps {
   avatarUrl?: string;
@@ -11,6 +13,7 @@ export default function GreetingsCard({
   name = "",
 }: GreetingsCardProps) {
   const isLoading = !avatarUrl || !name;
+  const [imgSrc, setImgSrc] = useState<string>(avatarUrl ?? defaultImage);
 
   return (
     <div className="flex flex-col space-x-4">
@@ -18,7 +21,7 @@ export default function GreetingsCard({
         <Skeleton className="h-14 w-14 rounded-full" />
       ) : (
         <Avatar className="h-14 w-14">
-          <AvatarImage src={avatarUrl} />
+          <AvatarImage src={imgSrc} onError={() => setImgSrc(defaultImage)} />
           <AvatarFallback>{name.slice(0, 2).toUpperCase()}</AvatarFallback>
         </Avatar>
       )}
