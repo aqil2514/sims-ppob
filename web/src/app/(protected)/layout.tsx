@@ -3,7 +3,7 @@ import Header from "@/components/layout/Header";
 import { RootState } from "@/store";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function ProtectedLayout({
   children,
@@ -12,13 +12,14 @@ export default function ProtectedLayout({
 }) {
   const auth = useSelector((state: RootState) => state.auth);
   const router = useRouter();
+  const dispatch = useDispatch();
   const { isAuthenticated } = auth;
 
   useEffect(() => {
     if (!isAuthenticated) {
       router.replace("/login");
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, router, dispatch]);
 
   return (
     <main>
