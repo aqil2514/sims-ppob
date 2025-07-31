@@ -26,7 +26,7 @@ export default function HistoryCard({
       {histories === undefined ? (
         skeletonArray.map((_, i) => <HistoryItemSkeleton key={i} />)
       ) : histories.length === 0 ? (
-        <p className="text-sm text-gray-500">Belum ada transaksi.</p>
+        <p className="text-sm text-gray-500 text-center block">Maaf tidak ada history transaksi saat ini.</p>
       ) : (
         <>
           {histories.map((history) => (

@@ -87,7 +87,7 @@ export async function getTransactionResource(token:string, limit:number){
   }
 }
 
-async function getProfile(token: string) {
+export async function getProfile(token: string) {
   try {
     const { data } = await axios.get(`${api}/profile`, {
       headers: {
@@ -102,7 +102,7 @@ async function getProfile(token: string) {
   }
 }
 
-async function getBalance(token: string) {
+export async function getBalance(token: string) {
   try {
     const { data } = await axios.get(`${api}/balance`, {
       headers: {
@@ -117,7 +117,7 @@ async function getBalance(token: string) {
   }
 }
 
-async function getServices(token: string) {
+export async function getServices(token: string) {
   try {
     const { data } = await axios.get(`${api}/services`, {
       headers: {
@@ -132,7 +132,7 @@ async function getServices(token: string) {
   }
 }
 
-async function getBanner() {
+export async function getBanner() {
   try {
     const { data } = await axios.get(`${api}/banner`);
 
@@ -143,7 +143,7 @@ async function getBanner() {
   }
 }
 
-async function getTransactionHistory(token: string, limit: number) {
+export async function getTransactionHistory(token: string, limit: number) {
   try {
     const { data } = await axios.get(`${api}/transaction/history`, {
       params: {

@@ -58,7 +58,7 @@ const MiddleSection = () => {
               </div>
             ))
           : services.map((service) => (
-              <Link href={`service/${service.service_code}`} key={service.service_code}>
+              <Link href={`service/${service.service_code}?serviceName=${service.service_name}`} key={service.service_code}>
                 <div className="flex flex-col items-center space-y-1 min-w-[64px]">
                   <Image
                     src={service.service_icon}
